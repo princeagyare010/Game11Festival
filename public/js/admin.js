@@ -12,6 +12,7 @@
   var logoutBtn = document.getElementById('logoutBtn');
   var searchInput = document.getElementById('searchInput');
   var exportBtn = document.getElementById('exportBtn');
+  var exportPdfBtn = document.getElementById('exportPdfBtn');
   var refreshBtn = document.getElementById('refreshBtn');
 
   var tableBody = document.getElementById('tableBody');
@@ -241,7 +242,21 @@
 
   // ---------- Export ----------
   exportBtn.addEventListener('click', function () {
-    window.location.href = '/api/admin/export.csv';
+    var query = searchInput.value.trim();
+    var url = '/api/admin/export.csv';
+    if (query) {
+      url += '?search=' + encodeURIComponent(query);
+    }
+    window.location.href = url;
+  });
+
+  exportPdfBtn.addEventListener('click', function () {
+    var query = searchInput.value.trim();
+    var url = '/api/admin/export.pdf';
+    if (query) {
+      url += '?search=' + encodeURIComponent(query);
+    }
+    window.location.href = url;
   });
 
   // ---------- Refresh ----------

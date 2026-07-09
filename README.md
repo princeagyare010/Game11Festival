@@ -98,10 +98,14 @@ This is a normal Node app, so it runs on Render, Railway, Fly.io, a VPS, etc.
 2. Make sure the `data/` folder is on **persistent** storage — some hosts wipe the
    filesystem on every deploy, which would delete your registrations. Most hosts
    offer a "persistent disk" or "volume" option; mount it at `data/`.
-3. Put it behind HTTPS (your host's built-in TLS, or a reverse proxy like Nginx with
+3. If you want a free-tier database instead of the local SQLite file, create a
+   Postgres database on a free service such as Neon or Supabase, then set
+   `DATABASE_URL` in your host's environment variables. The app will automatically
+   switch to Postgres when that variable is present.
+4. Put it behind HTTPS (your host's built-in TLS, or a reverse proxy like Nginx with
    Let's Encrypt). `NODE_ENV=production` makes the admin cookie `Secure`, meaning it
    will only work over HTTPS.
-4. Point your domain at it, and update the Instagram/terms links in the footer if
+5. Point your domain at it, and update the Instagram/terms links in the footer if
    your handle ever changes.
 
 ## Editing content

@@ -23,7 +23,7 @@ function makeRefCode() {
   return code;
 }
 
-router.post('/register', registerLimiter, (req, res) => {
+router.post('/register', registerLimiter, async (req, res) => {
   const body = req.body || {};
 
   // Honeypot: a hidden field real visitors never fill in. Bots that
@@ -38,7 +38,7 @@ router.post('/register', registerLimiter, (req, res) => {
     return res.status(400).json({ error: 'Please check the highlighted fields.', fields: errors });
   }
 
-  const existing = statements.findByEmail.get(data.email);
+  const existing = await statements.findByEmail.get(data.email);
   if (existing) {
     return res.status(409).json({
       error: 'That email is already registered for Game 11 Festival.',
@@ -49,7 +49,7 @@ router.post('/register', registerLimiter, (req, res) => {
   const refCode = makeRefCode();
 
   try {
-    statements.insert.run({
+    await statements.insert.run({
       ref_code: refCode,
       name: data.name,
       email: data.email,
