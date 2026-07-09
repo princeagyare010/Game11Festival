@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Game 11 Festival</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Big+Shoulders+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<div class="login-view" id="loginView">
+  <div class="login-card panel" id="loginCard">
+    <img src="/assets/logo.webp" alt="Game 11 Festival" class="login-card__logo">
+    <h1>Admin sign in</h1>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" class="btn-primary" id="loginBtn">
+        <span id="loginLabel">Sign in</span>
+      </button>
+      <p class="form-status" id="loginStatus" role="alert" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<div class="dashboard-view" id="dashboardView" hidden>
+  <header class="admin-header">
+    <div class="admin-header__brand">
+      <img src="/assets/logo.webp" alt="Game 11 Festival" class="admin-header__logo">
+      <span class="admin-header__title">Admin</span>
+    </div>
+    <button type="button" class="btn-ghost" id="logoutBtn">Sign out</button>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-toolbar">
+      <div class="admin-stat">
+        <span class="admin-stat__num" id="totalCount">0</span>
+        <span class="admin-stat__label">Registered</span>
+      </div>
+      <div class="admin-toolbar__actions">
+        <input type="search" id="searchInput" class="admin-search" placeholder="Search name, email, phone, reference…">
+        <button type="button" class="btn-secondary" id="exportBtn">Export CSV</button>
+        <button type="button" class="btn-secondary" id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Registered</th>
+              <th aria-label="Actions"></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <p class="table-loading" id="loadingState">Loading registrations…</p>
+      <p class="table-empty" id="emptyState" hidden>No registrations match your search.</p>
+      <p class="table-error" id="errorState" hidden></p>
+    </div>
+  </main>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game 11 Festival — Registration</title>
+<meta name="description" content="Register for Game 11 Festival, Accra's charity football festival running since 2017. Add your details to get match-day updates first.">
+
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Big+Shoulders+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="video-stage" aria-hidden="true">
+  <video class="video-stage__el" autoplay muted loop playsinline poster="/assets/hero-poster.webp">
+    <source src="/assets/hero.mp4" type="video/mp4">
+  </video>
+  <div class="video-stage__scrim"></div>
+</div>
+
+<header class="site-header">
+  <a href="/" class="site-header__brand" aria-label="Game 11 Festival home">
+    <img src="/assets/logo.webp" alt="Game 11 Festival" class="site-header__logo">
+  </a>
+</header>
+
+<main class="hero">
+  <div class="hero__grid">
+
+    <div class="hero__intro">
+      <p class="eyebrow">Welcome To Game 11 Festival</p>
+      <img src="/assets/logo.webp" alt="Game 11 Festival — Football Tournament" class="hero__logo">
+      <p class="hero__mission">Accra's charity football festival — on the pitch since 2017.</p>
+      <p class="hero__sub">Add your details and we'll send the date, venue and match-day schedule the moment they're locked in.</p>
+    </div>
+
+    <div class="panel" id="registerPanel">
+
+      <div class="panel__face panel__face--form" id="formFace">
+        <h1 class="panel__heading">Join our Community</h1>
+        <span class="panel__hint">Takes less than a minute.</span>
+
+        <form id="registerForm" novalidate>
+          <div class="field" id="field-name">
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" autocomplete="name" placeholder="First Last" maxlength="80" required>
+            <span class="field__error" id="err-name"></span>
+          </div>
+
+          <div class="field" id="field-email">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required>
+            <span class="field__error" id="err-email"></span>
+          </div>
+
+          <div class="field" id="field-phone">
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+233 00 000 0000" maxlength="20" required>
+            <span class="field__error" id="err-phone"></span>
+          </div>
+
+          <div class="field field--trap" aria-hidden="true">
+            <label for="company_website">Leave this field blank</label>
+            <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <label class="checkbox">
+            <input type="checkbox" id="agree" name="agree" required>
+            <span>I agree to the <a href="/terms">Terms &amp; Privacy Policy</a>.</span>
+          </label>
+          <span class="field__error--agree" id="err-agree"></span>
+
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <span id="submitLabel">Join the Festival</span>
+          </button>
+
+          <p class="panel__trust">We'll only use this to keep you updated on Game 11 Festival — no spam.</p>
+          <p class="form-status" id="formStatus" role="alert" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="panel__face panel__face--pass" id="passFace" hidden>
+        <p class="pass__kicker">Confirmed</p>
+        <h1 class="pass__headline">You're in</h1>
+        <p class="pass__name" id="passName"></p>
+        <p class="pass__detail">We've got your email and number — match-day details land in your inbox first.</p>
+
+        <div class="pass__stub">
+          <span class="pass__tag">Admit one</span>
+          <span class="pass__code" id="passCode"></span>
+        </div>
+
+        <a class="pass__ig" href="https://www.instagram.com/game11festival/?hl=en" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="12" cy="12" r="4.8" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/>
+          </svg>
+          Follow @game11festival
+        </a>
+
+        <button type="button" class="pass__again" id="registerAnother">Register someone else</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <a class="site-footer__ig" href="https://www.instagram.com/game11festival/?hl=en" target="_blank" rel="noopener noreferrer" aria-label="Game 11 Festival on Instagram">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="12" cy="12" r="4.8" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/>
+    </svg>
+    <span>@game11festival</span>
+  </a>
+  <p class="site-footer__copy">© <span id="year"></span> Game 11 Festival · Accra, Ghana</p>
+  <a class="site-footer__terms" href="/terms">Terms &amp; Privacy</a>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

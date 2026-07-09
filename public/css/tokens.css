@@ -1,0 +1,143 @@
+/* ============================================================
+   Game 11 Festival — design tokens
+   Palette sampled directly from the festival's own logo artwork:
+   pure black, brand green (#39D418), soft white. No gradients.
+   ============================================================ */
+
+:root {
+  /* Color */
+  --ink: #050505;
+  --ink-raised: #0e100e;
+  --chalk: #f7f7f4;
+  --chalk-dim: rgba(247, 247, 244, 0.66);
+  --chalk-faint: rgba(247, 247, 244, 0.4);
+  --brand-green: #39d418;
+  --brand-green-deep: #157a0a;
+  --danger: #ff6b5e;
+
+  --glass-fill: rgba(247, 247, 244, 0.055);
+  --glass-fill-strong: rgba(4, 5, 4, 0.6);
+  --glass-border: rgba(247, 247, 244, 0.14);
+  --glass-border-strong: rgba(247, 247, 244, 0.22);
+
+  /* Type */
+  --font-display: "Big Shoulders Display", "Archivo Narrow", sans-serif;
+  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+  --text-display: clamp(2.5rem, 1.6rem + 4vw, 4rem);
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-med: 320ms;
+  --dur-slow: 560ms;
+
+  --shadow-glass: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-btn: 0 10px 24px rgba(57, 212, 24, 0.22);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--ink);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* Consistent, visible keyboard focus everywhere; never removed, only restyled. */
+:focus-visible {
+  outline: 2px solid var(--brand-green);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
