@@ -31,4 +31,6 @@ server/                  Backend — Node.js + Express
 
 data/                    SQLite database file lives here at runtime (not in git)
 ```
+QR code session 
 
+by PRINCE AGYARE
