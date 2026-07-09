@@ -9,7 +9,11 @@ body {
   min-height: 100svh;
 }
 
-/* ---------- Login ---------- */
+/* ---------- Login & Dashboard views ---------- */
+
+[hidden] {
+  display: none !important;
+}
 
 .login-view {
   flex: 1 0 auto;
@@ -17,6 +21,12 @@ body {
   align-items: center;
   justify-content: center;
   padding: var(--space-6);
+}
+
+.dashboard-view {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .login-card {
