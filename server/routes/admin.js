@@ -79,7 +79,13 @@ router.get('/export.csv', requireAdmin, async (req, res) => {
     );
   }
 
-  const escape = (val) => `"${String(val).replace(/"/g, '""')}"`;
+  // Prefix values that begin with a spreadsheet formula trigger (= + - @) with a
+  // single quote so Excel/LibreOffice treat them as literal text (CSV injection).
+  const escape = (val) => {
+    const s = String(val);
+    const guarded = /^[=+\-@]/.test(s) ? `'${s}` : s;
+    return `"${guarded.replace(/"/g, '""')}"`;
+  };
   const header = ['Reference', 'Name', 'Email', 'Phone', 'Registered At'].map(escape).join(',');
   const lines = rows.map((r) =>
     [r.ref_code, r.name, r.email, r.phone, r.created_at].map(escape).join(',')
@@ -105,7 +111,13 @@ router.get('/export.pdf', requireAdmin, async (req, res) => {
     );
   }
 
-  const escapePdfText = (value) => String(value ?? '').replace(/[\\()]/g, '\\$&');
+  // Escape PDF text: backslashes/parens (string syntax), strip newlines that would
+  // corrupt the content stream, and replace non-ASCII chars Helvetica can't render.
+  const escapePdfText = (value) =>
+    String(value ?? '')
+      .replace(/[\\()]/g, '\\$&')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/[^\x20-\x7E]/g, '?');
   const lines = [
     'Game 11 Festival — Registrations',
     `Generated: ${new Date().toISOString()}`,
@@ -121,31 +133,67 @@ router.get('/export.pdf', requireAdmin, async (req, res) => {
     ]),
   ];
 
-  const contentLines = lines.map((line, index) => `BT /F1 11 Tf 72 ${760 - index * 13} Td (${escapePdfText(line)}) Tj ET`).join('\n');
-  const objects = [
-    '<< /Type /Catalog /Pages 2 0 R >>',
-    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
-    '<< /Length 0 >>stream\n' + contentLines + '\nendstream',
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
-  ];
+  // Paginate so large result sets don't overflow/clip a single page.
+  const topY = 760;
+  const lineHeight = 13;
+  const bottomY = 40;
+  const pages = [];
+  let current = [];
+  let y = topY;
+  for (const line of lines) {
+    current.push(line);
+    y -= lineHeight;
+    if (y < bottomY) {
+      pages.push(current);
+      current = [];
+      y = topY;
+    }
+  }
+  if (current.length) pages.push(current);
 
+  const fontNum = 3;
+  const pageInfos = pages.map((pageLines, i) => ({
+    pageLines,
+    contentNum: 4 + i * 2,
+    pageNum: 5 + i * 2,
+  }));
+
+  const objects = new Map();
+  objects.set(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  objects.set(
+    2,
+    `<< /Type /Pages /Kids [${pageInfos.map((p) => `${p.pageNum} 0 R`).join(' ')}] /Count ${pages.length} >>`
+  );
+  objects.set(fontNum, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+
+  for (const { pageLines, contentNum, pageNum } of pageInfos) {
+    const content = pageLines
+      .map((line, idx) => `BT /F1 11 Tf 72 ${topY - idx * lineHeight} Td (${escapePdfText(line)}) Tj ET`)
+      .join('\n');
+    objects.set(contentNum, `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}\nendstream`);
+    objects.set(
+      pageNum,
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents ${contentNum} 0 R /Resources << /Font << /F1 ${fontNum} 0 R >> >> >>`
+    );
+  }
+
+  const total = objects.size + 1; // include the free object 0
   const offsets = [];
   let pdf = '%PDF-1.4\n';
   let offset = pdf.length;
-  objects.forEach((obj, index) => {
+  for (let num = 1; num <= objects.size; num++) {
     offsets.push(offset);
-    pdf += `${index + 1} 0 obj\n${obj}\nendobj\n`;
+    pdf += `${num} 0 obj\n${objects.get(num)}\nendobj\n`;
     offset = pdf.length;
-  });
+  }
 
   const xrefOffset = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n`;
+  pdf += `xref\n0 ${total}\n`;
   pdf += '0000000000 65535 f \n';
   offsets.forEach((off) => {
     pdf += `${String(off).padStart(10, '0')} 00000 n \n`;
   });
-  pdf += `trailer<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+  pdf += `trailer<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
 
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', `attachment; filename="game11-registrations-${Date.now()}.pdf"`);

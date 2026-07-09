@@ -70,6 +70,8 @@ html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-green) rgba(247, 247, 244, 0.12);
 }
 
 body {
@@ -86,15 +88,20 @@ body {
   scrollbar-color: var(--brand-green) rgba(247, 247, 244, 0.12);
 }
 
+html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  width: 11px;
+  width: 8px;
+  height: 8px;
 }
 
 @media (min-width: 960px) {
+  html::-webkit-scrollbar,
   body::-webkit-scrollbar {
-    width: 7px;
+    width: 6px;
+    height: 6px;
   }
 
+  html::-webkit-scrollbar-thumb,
   body::-webkit-scrollbar-thumb {
     border-width: 1px;
   }

@@ -25,9 +25,9 @@ server/                  Backend — Node.js + Express
   db.js                     SQLite setup (better-sqlite3)
   routes/register.js        POST /api/register (public)
   routes/admin.js            Admin login + data routes (protected)
-  middleware/auth.js          Cookie/JWT session check
-  utils/validate.js            Input validation
-  scripts/hash-password.js      Helper to generate your admin password hash
+   middleware/auth.js          Cookie/JWT session check
+   utils/validate.js            Input validation
+
 
 data/                    SQLite database file lives here at runtime (not in git)
 ```

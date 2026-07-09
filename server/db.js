@@ -60,6 +60,7 @@ async function ensurePostgresInitialized() {
     );
 
     CREATE INDEX IF NOT EXISTS idx_registrations_created_at ON registrations(created_at);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_email_lower ON registrations (lower(email));
   `);
 
   backendStatements = {
@@ -74,7 +75,10 @@ async function ensurePostgresInitialized() {
     },
     findByEmail: {
       get: async (email) => {
-        const result = await pool.query(`SELECT id FROM registrations WHERE email = $1`, [email]);
+        const result = await pool.query(
+          `SELECT id FROM registrations WHERE lower(email) = lower($1)`,
+          [email]
+        );
         return result.rows[0] || null;
       },
     },

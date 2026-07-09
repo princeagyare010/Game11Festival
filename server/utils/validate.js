@@ -12,6 +12,7 @@ function validateRegistration(body) {
   const name = clean(body.name).replace(/\s+/g, ' ');
   const email = clean(body.email).toLowerCase();
   const phone = clean(body.phone);
+  const agree = body.agree === true;
 
   if (!name || !NAME_RE.test(name)) {
     errors.name = 'Enter a full name (letters only, 2-80 characters).';
@@ -26,10 +27,14 @@ function validateRegistration(body) {
     errors.phone = 'Enter a valid phone number, digits only plus optional + ( ) -.';
   }
 
+  if (!agree) {
+    errors.agree = 'You must agree to the Terms & Privacy Policy.';
+  }
+
   return {
     valid: Object.keys(errors).length === 0,
     errors,
-    data: { name, email, phone },
+    data: { name, email, phone, agree },
   };
 }
 

@@ -46,24 +46,43 @@ router.post('/register', registerLimiter, async (req, res) => {
     });
   }
 
-  const refCode = makeRefCode();
+  let refCode = makeRefCode();
+  let inserted = false;
 
-  try {
-    await statements.insert.run({
-      ref_code: refCode,
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      ip_address: req.ip,
-    });
-  } catch (err) {
-    if (String(err.message).includes('UNIQUE')) {
-      return res.status(409).json({
-        error: 'That email is already registered for Game 11 Festival.',
-        fields: { email: 'Already registered.' },
+  for (let attempt = 0; attempt < 5 && !inserted; attempt++) {
+    try {
+      await statements.insert.run({
+        ref_code: refCode,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        ip_address: req.ip,
       });
+      inserted = true;
+    } catch (err) {
+      const msg = String(err.message || '');
+
+      // A random reference-code collision is recoverable: try a new code.
+      if (msg.toLowerCase().includes('ref_code')) {
+        refCode = makeRefCode();
+        continue;
+      }
+
+      // Anything else unique (e.g. duplicate email) is a real conflict.
+      if (msg.toLowerCase().includes('unique') || msg.toLowerCase().includes('duplicate')) {
+        return res.status(409).json({
+          error: 'That email is already registered for Game 11 Festival.',
+          fields: { email: 'Already registered.' },
+        });
+      }
+
+      console.error('Registration insert failed:', err);
+      return res.status(500).json({ error: 'Something went wrong. Try again.' });
     }
-    console.error('Registration insert failed:', err);
+  }
+
+  if (!inserted) {
+    console.error('Could not generate a unique reference code after several attempts.');
     return res.status(500).json({ error: 'Something went wrong. Try again.' });
   }
 
