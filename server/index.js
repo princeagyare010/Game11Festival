@@ -71,10 +71,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong.' });
 });
 
-if (!process.env.JWT_SECRET || !process.env.ADMIN_PASSWORD_HASH) {
+if (!process.env.JWT_SECRET || !process.env.ADMIN_PASSWORD) {
   console.warn(
     '\n[Game 11 Festival] Admin login is not fully configured yet.\n' +
-      'Run "npm run hash-password -- \\"yourpassword\\"" and fill in .env (see .env.example)\n'
+      'Set ADMIN_USERNAME and ADMIN_PASSWORD in .env (see .env.example)\n'
   );
 }
 

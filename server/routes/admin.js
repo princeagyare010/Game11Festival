@@ -1,5 +1,4 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const { statements } = require('../db');
 const { signAdminToken, cookieOptions, requireAdmin, COOKIE_NAME } = require('../middleware/auth');
@@ -18,9 +17,8 @@ router.post('/login', loginLimiter, async (req, res) => {
   const { username, password } = req.body || {};
   const expectedUser = process.env.ADMIN_USERNAME;
   const plainPassword = process.env.ADMIN_PASSWORD;
-  const expectedHash = process.env.ADMIN_PASSWORD_HASH;
 
-  if (!expectedUser || (!plainPassword && !expectedHash)) {
+  if (!expectedUser || !plainPassword) {
     console.error('ADMIN_USERNAME / ADMIN_PASSWORD are not configured in .env');
     return res.status(500).json({ error: 'Admin login is not configured yet.' });
   }
@@ -30,14 +28,7 @@ router.post('/login', loginLimiter, async (req, res) => {
   }
 
   const usernameOk = username === expectedUser;
-  let passwordOk = false;
-
-  if (typeof plainPassword === 'string' && plainPassword.length > 0) {
-    passwordOk = password === plainPassword;
-  } else if (expectedHash) {
-    // Fallback for legacy hashes in .env.
-    passwordOk = await bcrypt.compare(password, expectedHash).catch(() => false);
-  }
+  const passwordOk = typeof plainPassword === 'string' && plainPassword.length > 0 && password === plainPassword;
 
   if (!usernameOk || !passwordOk) {
     return res.status(401).json({ error: 'Incorrect username or password.' });
