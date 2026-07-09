@@ -69,6 +69,7 @@
 html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -81,6 +82,26 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-green) rgba(247, 247, 244, 0.12);
+}
+
+body::-webkit-scrollbar {
+  width: 11px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(247, 247, 244, 0.12);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--brand-green), #5fe64b);
+  border: 2px solid rgba(5, 5, 5, 0.88);
+  border-radius: 999px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: #57e335;
 }
 
 h1, h2, h3, h4 {
