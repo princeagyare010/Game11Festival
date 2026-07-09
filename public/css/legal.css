@@ -104,9 +104,60 @@ body {
 }
 
 .legal__contact {
-  margin-top: var(--space-3);
-  font-size: var(--text-base);
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
   color: var(--chalk);
+}
+
+.legal__contact-item {
+  margin: 0;
+}
+
+.legal__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--chalk);
+  text-decoration: none;
+  line-height: 1.35;
+}
+
+.legal__contact-link:hover {
+  color: var(--brand-green);
+}
+
+.legal__contact-link--static {
+  cursor: default;
+}
+
+.legal__contact-icon {
+  flex: 0 0 auto;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--brand-green);
+}
+
+.legal__contact-link span {
+  display: inline-block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .legal__contact-link {
+    gap: 0.8rem;
+  }
+
+  .legal__contact-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
 }
 
 .site-footer {
