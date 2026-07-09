@@ -17,10 +17,11 @@ const loginLimiter = rateLimit({
 router.post('/login', loginLimiter, async (req, res) => {
   const { username, password } = req.body || {};
   const expectedUser = process.env.ADMIN_USERNAME;
+  const plainPassword = process.env.ADMIN_PASSWORD;
   const expectedHash = process.env.ADMIN_PASSWORD_HASH;
 
-  if (!expectedUser || !expectedHash) {
-    console.error('ADMIN_USERNAME / ADMIN_PASSWORD_HASH are not configured in .env');
+  if (!expectedUser || (!plainPassword && !expectedHash)) {
+    console.error('ADMIN_USERNAME / ADMIN_PASSWORD are not configured in .env');
     return res.status(500).json({ error: 'Admin login is not configured yet.' });
   }
 
@@ -28,10 +29,15 @@ router.post('/login', loginLimiter, async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required.' });
   }
 
-  // Constant-time-ish: always run bcrypt.compare even on username mismatch,
-  // so failed attempts take a similar amount of time either way.
   const usernameOk = username === expectedUser;
-  const passwordOk = await bcrypt.compare(password, expectedHash).catch(() => false);
+  let passwordOk = false;
+
+  if (typeof plainPassword === 'string' && plainPassword.length > 0) {
+    passwordOk = password === plainPassword;
+  } else if (expectedHash) {
+    // Fallback for legacy hashes in .env.
+    passwordOk = await bcrypt.compare(password, expectedHash).catch(() => false);
+  }
 
   if (!usernameOk || !passwordOk) {
     return res.status(401).json({ error: 'Incorrect username or password.' });
