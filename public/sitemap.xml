@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://game11festival.com/</loc>
     <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://game11festival.com/assets/icon-512.png</image:loc>
+      <image:title>Game 11 Festival logo</image:title>
+      <image:caption>Game 11 Festival logo</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://game11festival.com/terms</loc>
     <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+    <image:image>
+      <image:loc>https://game11festival.com/assets/icon-512.png</image:loc>
+      <image:title>Game 11 Festival logo</image:title>
+      <image:caption>Game 11 Festival logo</image:caption>
+    </image:image>
   </url>
 </urlset>
