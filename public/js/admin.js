@@ -40,7 +40,7 @@
   }
 
   function checkSession() {
-    fetch('/api/admin/me', { credentials: 'same-origin' })
+    fetch('/api/admin/me', { credentials: 'same-origin', cache: 'no-store' })
       .then(function (res) {
         if (res.ok) {
           showDashboard();
@@ -64,6 +64,7 @@
     fetch('/api/admin/login', {
       method: 'POST',
       credentials: 'same-origin',
+      cache: 'no-store',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, password: password }),
     })
@@ -91,7 +92,7 @@
 
   // ---------- Logout ----------
   logoutBtn.addEventListener('click', function () {
-    fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }).finally(showLogin);
+    fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin', cache: 'no-store' }).finally(showLogin);
   });
 
   // ---------- Load + render ----------
@@ -101,7 +102,7 @@
     errorState.hidden = true;
     tableBody.innerHTML = '';
 
-    fetch('/api/admin/registrations', { credentials: 'same-origin' })
+    fetch('/api/admin/registrations', { credentials: 'same-origin', cache: 'no-store' })
       .then(function (res) {
         if (res.status === 401) {
           showLogin();
@@ -220,6 +221,7 @@
       fetch('/api/admin/registrations/' + id, {
         method: 'DELETE',
         credentials: 'same-origin',
+        cache: 'no-store',
       })
         .then(function (res) {
           if (res.ok) {

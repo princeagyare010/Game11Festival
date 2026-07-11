@@ -202,9 +202,20 @@ app.get('/favicon.ico', (req, res) => {
   return res.status(404).send('Not found');
 });
 
-app.get('/admin', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
+app.get('/admin', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  return res.sendFile(path.join(PUBLIC_DIR, 'admin.html'));
+});
 app.get('/terms', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'terms.html')));
 
+app.use('/api/admin', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  return next();
+});
 app.use('/api', registerRoutes);
 app.use('/api/admin', adminRoutes);
 
