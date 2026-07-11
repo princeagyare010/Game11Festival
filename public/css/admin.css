@@ -454,19 +454,36 @@ body {
     padding-bottom: var(--space-2);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: var(--space-3);
     width: 100%;
+  }
+
+  .admin-table td:last-child::before {
+    content: attr(data-label);
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    margin-right: var(--space-2);
+    flex-shrink: 0;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--chalk-faint);
   }
 
   .row-delete {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     box-sizing: border-box;
-    width: 100%;
-    max-width: 120px;
+    width: auto;
+    min-width: 96px;
+    max-width: none;
     min-height: 44px;
-    margin: 0;
+    margin-left: auto;
     padding: 0.65rem 1rem;
     text-align: center;
     border-radius: var(--radius-pill);
