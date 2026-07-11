@@ -95,6 +95,7 @@ app.use((req, res, next) => {
   const host = req.get('host') || '';
   const isWww = host.startsWith('www.');
   const isHealthCheck = req.path === '/health' || req.path === '/healthz';
+  const isAdminOrApi = req.path.startsWith('/admin') || req.path.startsWith('/api');
 
   if (IS_PRODUCTION && !isHealthCheck) {
     if (isWww || !isHttpsRequest) {
@@ -107,6 +108,7 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Robots-Tag', isAdminOrApi ? 'noindex, nofollow' : 'index, follow');
   return next();
 });
 
