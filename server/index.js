@@ -14,6 +14,7 @@ if (isCloudDeployment && !process.env.NODE_ENV) {
   process.env.NODE_ENV = 'production';
 }
 
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
@@ -114,13 +115,11 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   const startedAt = Date.now();
   res.on('finish', () => {
-    const isApiRequest = req.path.startsWith('/api') || req.path === '/health' || req.path === '/healthz';
-    if (!isApiRequest) return;
-
     const statusCode = res.statusCode;
     const durationMs = Date.now() - startedAt;
     const level = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
-    const message = `[request] ${req.method} ${req.path} -> ${statusCode} (${durationMs}ms)`;
+    const requestTarget = req.originalUrl || req.url || req.path;
+    const message = `[request] ${req.method} ${requestTarget} -> ${statusCode} (${durationMs}ms)`;
 
     if (level === 'error') {
       console.error(message);
@@ -133,12 +132,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// Clean URLs: Redirect .html requests to extensionless equivalents
+// Clean URLs: Redirect .html requests to extensionless equivalents for route pages.
+// Preserve real files like verification HTML files when they exist in the public directory.
 app.use((req, res, next) => {
   if (req.path.endsWith('.html')) {
+    const requestedFilePath = path.join(PUBLIC_DIR, req.path.slice(1));
+    const exactFileExists = fs.existsSync(requestedFilePath) && fs.statSync(requestedFilePath).isFile();
+
     if (req.path === '/index.html') {
       return res.redirect(301, '/');
     }
+
+    if (exactFileExists) {
+      return next();
+    }
+
     const cleanPath = req.path.slice(0, -5);
     return res.redirect(301, cleanPath + (req.url.substring(req.path.length) || ''));
   }
@@ -184,6 +192,14 @@ app.get('/health', async (req, res) => {
     lastDbCheckOk = false;
     res.status(200).json({ status: 'DEGRADED', database: 'unavailable', cached: false, message: 'Database temporarily unavailable' });
   }
+});
+
+app.get('/favicon.ico', (req, res) => {
+  const iconPath = path.join(PUBLIC_DIR, 'assets', 'favicon.ico');
+  if (fs.existsSync(iconPath)) {
+    return res.sendFile(iconPath);
+  }
+  return res.status(404).send('Not found');
 });
 
 app.get('/admin', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
