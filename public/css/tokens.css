@@ -21,8 +21,8 @@
   --glass-border-strong: rgba(247, 247, 244, 0.22);
 
   /* Type */
-  --font-display: "Big Shoulders Display", "Archivo Narrow", sans-serif;
-  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Arial", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Arial", "Helvetica Neue", Arial, sans-serif;
 
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;

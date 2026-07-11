@@ -39,10 +39,9 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Big+Shoulders+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+<!-- Critical assets -->
+<link rel="preload" href="/assets/logo.webp" as="image" type="image/webp" fetchpriority="high">
+<link rel="preload" href="/assets/hero-poster.webp" as="image" type="image/webp">
 
 <!-- Stylesheets -->
 <link rel="stylesheet" href="/css/tokens.css">
@@ -91,24 +90,24 @@
 <body>
 
 <div class="video-stage" aria-hidden="true">
-  <video class="video-stage__el" autoplay muted loop playsinline poster="/assets/hero-poster.webp">
+  <video class="video-stage__el" autoplay muted loop playsinline poster="/assets/hero-poster.webp" preload="none">
     <source src="/assets/hero.mp4" type="video/mp4">
   </video>
   <div class="video-stage__scrim"></div>
 </div>
 
-<header class="site-header">
+<header class="site-header" role="banner">
   <a href="/" class="site-header__brand" aria-label="Game 11 Festival home">
-    <img src="/assets/logo.webp" alt="Game 11 Festival" class="site-header__logo">
+    <img src="/assets/logo.webp" alt="Game 11 Festival" class="site-header__logo" width="42" height="42">
   </a>
 </header>
 
-<main class="hero">
+<main class="hero" role="main">
   <div class="hero__grid">
 
     <div class="hero__intro">
       <h1 class="hero__title">Game 11 Festival</h1>
-      <img src="/assets/logo.webp" alt="Game 11 Festival — Football Tournament" class="hero__logo">
+      <img src="/assets/logo.webp" alt="Game 11 Festival — Football Tournament" class="hero__logo" width="536" height="305" loading="eager" decoding="async" fetchpriority="high">
       <p class="hero__mission">July 11 | Ais Park | 2026 — Don't miss your bag!</p>
       <p class="hero__sub">Game 11 Festival is more than a football tournament; it is a sports-driven charity initiative empowering youth, building character, and uniting communities since 2017.</p>
     </div>
@@ -165,7 +164,7 @@
         <p class="pass__detail">You're on the list for July 11. We'll share festival updates with you by email and phone ahead of the event.</p>
 
         <div class="pass__stub">
-          <span class="pass__tag">Admit one</span>
+          <span class="pass__tag">Successful!</span>
           <span class="pass__code" id="passCode"></span>
         </div>
 
@@ -183,7 +182,7 @@
   </div>
 </main>
 
-<footer class="site-footer">
+<footer class="site-footer" role="contentinfo">
   <a class="site-footer__ig" href="https://www.instagram.com/game11festival/?hl=en" target="_blank" rel="noopener noreferrer" aria-label="Game 11 Festival on Instagram">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path fill="currentColor" d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3"/>

@@ -139,6 +139,7 @@ body {
 
 .hero__logo {
   width: min(440px, 88%);
+  height: auto;
   margin: 0 0 var(--space-5);
 }
 
@@ -215,7 +216,7 @@ body {
 
 .panel__hint {
   display: block;
-  color: var(--chalk-dim);
+  color: #ffffff;
   font-size: var(--text-sm);
   margin-bottom: var(--space-6);
 }
@@ -356,7 +357,7 @@ body {
 .panel__trust {
   margin-top: var(--space-4);
   font-size: var(--text-xs);
-  color: var(--chalk-faint);
+  color: #f8f8f2;
   text-align: center;
 }
 
@@ -516,7 +517,7 @@ body {
 .site-footer__terms {
   order: 2;
   font-size: var(--text-sm);
-  color: var(--chalk-dim);
+  color: #f2f2eb;
   text-decoration: none;
 }
 
@@ -529,7 +530,7 @@ body {
   flex-basis: 100%;
   text-align: center;
   font-size: var(--text-xs);
-  color: var(--chalk-faint);
+  color: #f8f8f2;
 }
 
 @media (min-width: 640px) {
