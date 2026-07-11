@@ -76,11 +76,11 @@ app.use(
 app.use((req, res, next) => {
   const forwardedProto = req.get('x-forwarded-proto');
   const isHttpsRequest = req.secure || forwardedProto?.split(',')[0]?.trim() === 'https';
-
   const host = req.get('host') || '';
   const isWww = host.startsWith('www.');
+  const isHealthCheck = req.path === '/health' || req.path === '/healthz';
 
-  if (IS_PRODUCTION) {
+  if (IS_PRODUCTION && !isHealthCheck) {
     if (isWww || !isHttpsRequest) {
       const targetHost = isWww ? host.slice(4) : host;
       return res.redirect(301, `https://${targetHost}${req.originalUrl}`);
@@ -173,6 +173,6 @@ if (!process.env.JWT_SECRET || !process.env.ADMIN_PASSWORD) {
   );
 }
 
-app.listen(PORT, () => {
-  console.log(`Game 11 Festival server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Game 11 Festival server running on http://0.0.0.0:${PORT}`);
 });
