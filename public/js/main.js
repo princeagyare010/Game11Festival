@@ -67,6 +67,7 @@
   var formStatus = document.getElementById('formStatus');
 
   var fields = ['name', 'email', 'phone'];
+  var isSubmitting = false;
 
   function setFieldError(field, message) {
     var wrap = document.getElementById('field-' + field);
@@ -122,6 +123,8 @@
   if (form) {
     form.addEventListener('submit', function (evt) {
       evt.preventDefault();
+      if (isSubmitting) return;
+
       clearErrors();
 
       var phoneValue = document.getElementById('phone').value.trim();
@@ -144,6 +147,7 @@
         return;
       }
 
+      isSubmitting = true;
       submitBtn.disabled = true;
       submitLabel.textContent = 'Joining…';
 
@@ -158,7 +162,7 @@
           });
         })
         .then(function (result) {
-          if (result.status === 201) {
+          if (result.status === 201 || result.status === 200) {
             showPass(result.payload);
             return;
           }
@@ -174,6 +178,7 @@
           formStatus.textContent = 'Network error — check your connection and try again.';
         })
         .finally(function () {
+          isSubmitting = false;
           submitBtn.disabled = false;
           submitLabel.textContent = 'Join the Festival';
         });
@@ -186,6 +191,7 @@
   var passFace = document.getElementById('passFace');
   var passName = document.getElementById('passName');
   var passCode = document.getElementById('passCode');
+  var passHeadline = document.getElementById('passHeadline');
   var registerAnother = document.getElementById('registerAnother');
 
   function crossFade(hideEl, showEl, fillFn) {
@@ -219,14 +225,18 @@
 
   function showPass(payload) {
     crossFade(formFace, passFace, function () {
-      passName.textContent = payload.name || '';
-      passCode.textContent = payload.refCode || '';
+      if (passHeadline) {
+        passHeadline.textContent = payload && payload.alreadyRegistered ? 'You’re already on the list' : 'You\'re in';
+      }
+      passName.textContent = payload && payload.name ? payload.name : '';
+      passCode.textContent = payload && payload.refCode ? payload.refCode : (payload && payload.alreadyRegistered ? 'Already registered' : '');
     });
   }
 
   if (registerAnother) {
     registerAnother.addEventListener('click', function () {
       crossFade(passFace, formFace, function () {
+        isSubmitting = false;
         form.reset();
         clearErrors();
       });

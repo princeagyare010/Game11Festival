@@ -27,7 +27,12 @@ function createSqliteStatements(sqliteDb) {
       `).run(values)),
     },
     findByEmail: {
-      get: (email) => Promise.resolve(sqliteDb.prepare(`SELECT id FROM registrations WHERE email = ? COLLATE NOCASE`).get(email)),
+      get: (email) => Promise.resolve(sqliteDb.prepare(`
+        SELECT id, ref_code, name, email
+        FROM registrations
+        WHERE email = ? COLLATE NOCASE
+        LIMIT 1
+      `).get(email)),
     },
     all: {
       all: () => Promise.resolve(sqliteDb.prepare(`SELECT id, ref_code, name, email, phone, created_at FROM registrations ORDER BY created_at DESC`).all()),
@@ -79,7 +84,7 @@ async function ensurePostgresInitialized() {
       findByEmail: {
         get: async (email) => {
           const result = await pool.query(
-            `SELECT id FROM registrations WHERE lower(email) = lower($1)`,
+            `SELECT id, ref_code, name, email FROM registrations WHERE lower(email) = lower($1) LIMIT 1`,
             [email]
           );
           return result.rows[0] || null;

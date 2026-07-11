@@ -8,7 +8,7 @@ const router = express.Router();
 
 const registerLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 8,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many attempts. Try again in a few minutes.' },
@@ -42,10 +42,13 @@ router.post('/register', registerLimiter, async (req, res) => {
 
   const existing = await statements.findByEmail.get(data.email);
   if (existing) {
-    console.warn('[register] duplicate email');
-    return res.status(409).json({
-      error: 'That email is already registered for Game 11 Festival.',
-      fields: { email: 'Already registered.' },
+    console.info('[register] duplicate email; returning existing registration');
+    return res.status(200).json({
+      ok: true,
+      alreadyRegistered: true,
+      refCode: existing.ref_code,
+      name: existing.name,
+      message: 'You are already on the list for Game 11 Festival.',
     });
   }
 
@@ -74,9 +77,13 @@ router.post('/register', registerLimiter, async (req, res) => {
 
       // Anything else unique (e.g. duplicate email) is a real conflict.
       if (msg.toLowerCase().includes('unique') || msg.toLowerCase().includes('duplicate')) {
-        return res.status(409).json({
-          error: 'That email is already registered for Game 11 Festival.',
-          fields: { email: 'Already registered.' },
+        console.info('[register] duplicate email on insert');
+        return res.status(200).json({
+          ok: true,
+          alreadyRegistered: true,
+          name: data.name,
+          refCode: refCode,
+          message: 'You are already on the list for Game 11 Festival.',
         });
       }
 
