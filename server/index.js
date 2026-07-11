@@ -21,7 +21,7 @@ const cookieParser = require('cookie-parser');
 
 const registerRoutes = require('./routes/register');
 const adminRoutes = require('./routes/admin');
-const { statements } = require('./db');
+const { statements, ensurePostgresInitialized } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -187,6 +187,17 @@ if (!process.env.JWT_SECRET || !process.env.ADMIN_PASSWORD) {
   );
 }
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Game 11 Festival server running on http://0.0.0.0:${PORT}`);
+async function startServer() {
+  if (process.env.DATABASE_URL) {
+    await ensurePostgresInitialized();
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Game 11 Festival server running on http://0.0.0.0:${PORT}`);
+  });
+}
+
+startServer().catch((err) => {
+  console.error('Failed to start Game 11 Festival server:', err);
+  process.exit(1);
 });

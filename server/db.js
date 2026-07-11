@@ -16,6 +16,7 @@ let pool = null;
 let statements = null;
 let backendStatements = null;
 let initialized = false;
+let initPromise = null;
 
 function createSqliteStatements(sqliteDb) {
   return {
@@ -42,75 +43,85 @@ function createSqliteStatements(sqliteDb) {
 
 async function ensurePostgresInitialized() {
   if (initialized) return;
+  if (initPromise) return initPromise;
 
-  pool = new Pool({
-    connectionString: databaseUrl,
-    ssl: process.env.PGSSLMODE === 'disable' ? false : { rejectUnauthorized: false },
-  });
+  initPromise = (async () => {
+    pool = new Pool({
+      connectionString: databaseUrl,
+      ssl: process.env.PGSSLMODE === 'disable' ? false : { rejectUnauthorized: false },
+    });
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS registrations (
-      id SERIAL PRIMARY KEY,
-      ref_code TEXT NOT NULL UNIQUE,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      phone TEXT NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      ip_address TEXT
-    );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS registrations (
+        id SERIAL PRIMARY KEY,
+        ref_code TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        phone TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        ip_address TEXT
+      );
 
-    CREATE INDEX IF NOT EXISTS idx_registrations_created_at ON registrations(created_at);
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_email_lower ON registrations (lower(email));
-  `);
+      CREATE INDEX IF NOT EXISTS idx_registrations_created_at ON registrations(created_at);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_email_lower ON registrations (lower(email));
+    `);
 
-  backendStatements = {
-    insert: {
-      run: async (values) => {
-        const result = await pool.query(`
-          INSERT INTO registrations (ref_code, name, email, phone, ip_address)
-          VALUES ($1, $2, $3, $4, $5)
-        `, [values.ref_code, values.name, values.email, values.phone, values.ip_address]);
-        return { changes: result.rowCount };
+    backendStatements = {
+      insert: {
+        run: async (values) => {
+          const result = await pool.query(`
+            INSERT INTO registrations (ref_code, name, email, phone, ip_address)
+            VALUES ($1, $2, $3, $4, $5)
+          `, [values.ref_code, values.name, values.email, values.phone, values.ip_address]);
+          return { changes: result.rowCount };
+        },
       },
-    },
-    findByEmail: {
-      get: async (email) => {
-        const result = await pool.query(
-          `SELECT id FROM registrations WHERE lower(email) = lower($1)`,
-          [email]
-        );
-        return result.rows[0] || null;
+      findByEmail: {
+        get: async (email) => {
+          const result = await pool.query(
+            `SELECT id FROM registrations WHERE lower(email) = lower($1)`,
+            [email]
+          );
+          return result.rows[0] || null;
+        },
       },
-    },
-    all: {
-      all: async () => {
-        const result = await pool.query(`SELECT id, ref_code, name, email, phone, created_at FROM registrations ORDER BY created_at DESC`);
-        return result.rows;
+      all: {
+        all: async () => {
+          const result = await pool.query(`SELECT id, ref_code, name, email, phone, created_at FROM registrations ORDER BY created_at DESC`);
+          return result.rows;
+        },
       },
-    },
-    count: {
-      get: async () => {
-        const result = await pool.query(`SELECT COUNT(*) AS total FROM registrations`);
-        return result.rows[0] || { total: 0 };
+      count: {
+        get: async () => {
+          const result = await pool.query(`SELECT COUNT(*) AS total FROM registrations`);
+          return result.rows[0] || { total: 0 };
+        },
       },
-    },
-    deleteById: {
-      run: async (id) => {
-        const result = await pool.query(`DELETE FROM registrations WHERE id = $1`, [id]);
-        return { changes: result.rowCount };
+      deleteById: {
+        run: async (id) => {
+          const result = await pool.query(`DELETE FROM registrations WHERE id = $1`, [id]);
+          return { changes: result.rowCount };
+        },
       },
-    },
-  };
+    };
 
-  statements = {
-    insert: { run: (values) => backendStatements.insert.run(values) },
-    findByEmail: { get: (email) => backendStatements.findByEmail.get(email) },
-    all: { all: () => backendStatements.all.all() },
-    count: { get: () => backendStatements.count.get() },
-    deleteById: { run: (id) => backendStatements.deleteById.run(id) },
-  };
+    statements = {
+      insert: { run: (values) => backendStatements.insert.run(values) },
+      findByEmail: { get: (email) => backendStatements.findByEmail.get(email) },
+      all: { all: () => backendStatements.all.all() },
+      count: { get: () => backendStatements.count.get() },
+      deleteById: { run: (id) => backendStatements.deleteById.run(id) },
+    };
 
-  initialized = true;
+    initialized = true;
+  })();
+
+  try {
+    await initPromise;
+  } catch (err) {
+    initPromise = null;
+    throw err;
+  }
 }
 
 if (!usePostgres) {
@@ -170,4 +181,4 @@ if (!usePostgres) {
   };
 }
 
-module.exports = { db, statements };
+module.exports = { db, statements, ensurePostgresInitialized };
