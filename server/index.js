@@ -202,6 +202,14 @@ app.get('/favicon.ico', (req, res) => {
   return res.status(404).send('Not found');
 });
 
+app.get(['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'], (req, res) => {
+  const iconPath = path.join(PUBLIC_DIR, 'assets', 'apple-touch-icon.png');
+  if (fs.existsSync(iconPath)) {
+    return res.sendFile(iconPath);
+  }
+  return res.status(404).send('Not found');
+});
+
 app.get('/admin', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
