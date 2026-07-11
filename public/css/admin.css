@@ -302,8 +302,31 @@ body {
 
   .admin-header {
     padding: var(--space-3) var(--space-4);
-    flex-wrap: wrap;
-    gap: var(--space-3);
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+  }
+
+  .admin-header__brand {
+    min-width: 0;
+  }
+
+  .admin-header__logo {
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .admin-header__title {
+    padding-left: var(--space-2);
+    font-size: var(--text-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #logoutBtn {
+    flex-shrink: 0;
+    padding: 0.5rem 0.85rem;
+    font-size: var(--text-xs);
   }
 
   .admin-toolbar {
@@ -312,21 +335,25 @@ body {
   }
 
   .admin-toolbar__actions {
-    justify-content: stretch;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-2);
     width: 100%;
   }
 
   .admin-search {
-    flex-basis: 100%;
+    grid-column: 1 / -1;
     max-width: none;
     min-width: 0;
     width: 100%;
   }
 
-  .btn-secondary,
-  .btn-ghost {
+  .btn-secondary {
     width: 100%;
+    padding: 0.6rem 0.4rem;
+    font-size: var(--text-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .table-wrap {
