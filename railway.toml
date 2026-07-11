@@ -1,0 +1,12 @@
+# railway.toml
+# Railway service deployment configuration for Game 11 Festival
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
+healthcheckPath = "/health"
+healthcheckTimeout = 30

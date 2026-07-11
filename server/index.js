@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const registerRoutes = require('./routes/register');
 const adminRoutes = require('./routes/admin');
+const { statements } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -76,8 +77,14 @@ app.use((req, res, next) => {
   const forwardedProto = req.get('x-forwarded-proto');
   const isHttpsRequest = req.secure || forwardedProto?.split(',')[0]?.trim() === 'https';
 
-  if (IS_PRODUCTION && !isHttpsRequest) {
-    return res.redirect(301, `https://${req.hostname}${req.originalUrl}`);
+  const host = req.get('host') || '';
+  const isWww = host.startsWith('www.');
+
+  if (IS_PRODUCTION) {
+    if (isWww || !isHttpsRequest) {
+      const targetHost = isWww ? host.slice(4) : host;
+      return res.redirect(301, `https://${targetHost}${req.originalUrl}`);
+    }
   }
 
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
@@ -89,6 +96,18 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
+
+// Clean URLs: Redirect .html requests to extensionless equivalents
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html')) {
+    if (req.path === '/index.html') {
+      return res.redirect(301, '/');
+    }
+    const cleanPath = req.path.slice(0, -5);
+    return res.redirect(301, cleanPath + (req.url.substring(req.path.length) || ''));
+  }
+  next();
+});
 
 app.use(
   express.static(PUBLIC_DIR, {
@@ -104,6 +123,33 @@ app.use(
     },
   })
 );
+
+let lastDbCheckTime = 0;
+let lastDbCheckOk = true;
+
+app.get('/health', async (req, res) => {
+  const now = Date.now();
+  // Cache the database check result for 10 seconds to protect against DB query exhaustion DoS
+  if (now - lastDbCheckTime < 10000) {
+    if (lastDbCheckOk) {
+      return res.status(200).json({ status: 'OK', database: 'connected', cached: true });
+    } else {
+      return res.status(500).json({ status: 'ERROR', message: 'Database query failed', cached: true });
+    }
+  }
+
+  try {
+    await statements.count.get();
+    lastDbCheckTime = now;
+    lastDbCheckOk = true;
+    res.status(200).json({ status: 'OK', database: 'connected', cached: false });
+  } catch (err) {
+    console.error('Health check database query failed:', err);
+    lastDbCheckTime = now;
+    lastDbCheckOk = false;
+    res.status(500).json({ status: 'ERROR', message: 'Database query failed', cached: false });
+  }
+});
 
 app.get('/admin', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
 app.get('/terms', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'terms.html')));

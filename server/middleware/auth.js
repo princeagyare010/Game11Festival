@@ -15,6 +15,7 @@ function getSecret() {
 
 function signAdminToken(username) {
   return jwt.sign({ sub: username, role: 'admin' }, getSecret(), {
+    algorithm: 'HS256',
     expiresIn: `${SESSION_HOURS}h`,
   });
 }
@@ -35,7 +36,7 @@ function requireAdmin(req, res, next) {
     return res.status(401).json({ error: 'Not signed in.' });
   }
   try {
-    req.admin = jwt.verify(token, getSecret());
+    req.admin = jwt.verify(token, getSecret(), { algorithms: ['HS256'] });
     return next();
   } catch (err) {
     return res.status(401).json({ error: 'Session expired. Sign in again.' });
