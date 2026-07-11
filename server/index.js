@@ -23,6 +23,7 @@ const cookieParser = require('cookie-parser');
 const registerRoutes = require('./routes/register');
 const adminRoutes = require('./routes/admin');
 const { statements, ensurePostgresInitialized } = require('./db');
+const { getSafeRequestTarget } = require('./utils/logging');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -118,8 +119,8 @@ app.use((req, res, next) => {
     const statusCode = res.statusCode;
     const durationMs = Date.now() - startedAt;
     const level = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
-    const requestTarget = req.originalUrl || req.url || req.path;
-    const message = `[request] ${req.method} ${requestTarget} -> ${statusCode} (${durationMs}ms)`;
+    const safeRequestTarget = getSafeRequestTarget(req);
+    const message = `[request] ${req.method} ${safeRequestTarget} -> ${statusCode} (${durationMs}ms)`;
 
     if (level === 'error') {
       console.error(message);
