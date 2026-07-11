@@ -23,7 +23,22 @@
   // ---------- Validation (mirrors the server) ----------
   var NAME_RE = /^[\p{L}\p{M} .'-]{2,80}$/u;
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  var PHONE_RE = /^[0-9+()\-\s]{7,20}$/;
+  var PHONE_RE = /^\+233\d{9}$/;
+
+  function normalizePhone(value) {
+    var raw = (value || '').trim();
+    var digits = raw.replace(/\D/g, '');
+
+    if (digits.length === 10 && digits.charAt(0) === '0') {
+      return '+233' + digits.slice(1);
+    }
+
+    if (digits.length === 12 && digits.indexOf('233') === 0) {
+      return '+' + digits;
+    }
+
+    return null;
+  }
 
   function validate(data) {
     var errors = {};
@@ -34,9 +49,10 @@
     if (!data.email || !EMAIL_RE.test(data.email)) {
       errors.email = 'Enter a valid email address.';
     }
-    var digitCount = (data.phone.match(/\d/g) || []).length;
-    if (!data.phone || !PHONE_RE.test(data.phone) || digitCount < 7) {
-      errors.phone = 'Enter a valid phone number.';
+
+    var normalizedPhone = normalizePhone(data.phone);
+    if (!data.phone || !normalizedPhone || !PHONE_RE.test(normalizedPhone)) {
+      errors.phone = 'Enter a valid Ghanaian phone number (10 digits starting with 0).';
     }
     if (!data.agree) {
       errors.agree = 'You need to agree to continue.';
@@ -82,8 +98,16 @@
   fields.forEach(function (f) {
     var input = document.getElementById(f);
     if (input) {
-      input.addEventListener('input', function () {
+      input.addEventListener('input', function (evt) {
         setFieldError(f, '');
+        if (f === 'phone') {
+          var digits = evt.target.value.replace(/\D/g, '').slice(0, 10);
+          var displayValue = digits;
+          if (digits.length > 3) {
+            displayValue = digits.slice(0, 3) + ' ' + digits.slice(3, 6) + ' ' + digits.slice(6);
+          }
+          evt.target.value = displayValue;
+        }
       });
     }
   });
@@ -100,10 +124,12 @@
       evt.preventDefault();
       clearErrors();
 
+      var phoneValue = document.getElementById('phone').value.trim();
+      var normalizedPhone = normalizePhone(phoneValue);
       var data = {
         name: document.getElementById('name').value.trim().replace(/\s+/g, ' '),
         email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
+        phone: normalizedPhone || phoneValue,
         agree: document.getElementById('agree').checked,
         company_website: document.getElementById('company_website').value,
       };
