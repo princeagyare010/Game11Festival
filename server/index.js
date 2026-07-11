@@ -129,12 +129,11 @@ let lastDbCheckOk = true;
 
 app.get('/health', async (req, res) => {
   const now = Date.now();
-  // Cache the database check result for 10 seconds to protect against DB query exhaustion DoS
   if (now - lastDbCheckTime < 10000) {
     if (lastDbCheckOk) {
       return res.status(200).json({ status: 'OK', database: 'connected', cached: true });
     } else {
-      return res.status(500).json({ status: 'ERROR', message: 'Database query failed', cached: true });
+      return res.status(200).json({ status: 'DEGRADED', database: 'unavailable', cached: true });
     }
   }
 
@@ -147,7 +146,7 @@ app.get('/health', async (req, res) => {
     console.error('Health check database query failed:', err);
     lastDbCheckTime = now;
     lastDbCheckOk = false;
-    res.status(500).json({ status: 'ERROR', message: 'Database query failed', cached: false });
+    res.status(200).json({ status: 'DEGRADED', database: 'unavailable', cached: false, message: 'Database temporarily unavailable' });
   }
 });
 
