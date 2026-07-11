@@ -1,4 +1,18 @@
-require('dotenv').config();
+const isCloudDeployment = Boolean(
+  process.env.RAILWAY_ENVIRONMENT_NAME ||
+  process.env.RAILWAY_PROJECT_ID ||
+  process.env.RENDER ||
+  process.env.VERCEL ||
+  process.env.HEROKU
+);
+
+if (!isCloudDeployment) {
+  require('dotenv').config();
+}
+
+if (isCloudDeployment && !process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
 
 const path = require('path');
 const express = require('express');
