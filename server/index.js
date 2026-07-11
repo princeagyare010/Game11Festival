@@ -197,20 +197,18 @@ app.get('/health', async (req, res) => {
   }
 });
 
-app.get('/favicon.ico', (req, res) => {
-  const iconPath = path.join(PUBLIC_DIR, 'assets', 'favicon.ico');
-  if (fs.existsSync(iconPath)) {
-    return res.sendFile(iconPath);
+function sendStaticAsset(req, res, assetFileName) {
+  const assetPath = path.join(PUBLIC_DIR, 'assets', assetFileName);
+  if (fs.existsSync(assetPath)) {
+    return res.sendFile(assetPath);
   }
   return res.status(404).send('Not found');
-});
+}
 
-app.get(['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'], (req, res) => {
-  const iconPath = path.join(PUBLIC_DIR, 'assets', 'apple-touch-icon.png');
-  if (fs.existsSync(iconPath)) {
-    return res.sendFile(iconPath);
-  }
-  return res.status(404).send('Not found');
+app.get('/favicon.ico', (req, res) => sendStaticAsset(req, res, 'favicon.ico'));
+
+app.get(/^\/apple-touch-icon(?:-[^/]+)?(?:-precomposed)?\.png$/i, (req, res) => {
+  return sendStaticAsset(req, res, 'apple-touch-icon.png');
 });
 
 app.get('/admin', (req, res) => {
