@@ -19,11 +19,12 @@ router.post('/login', loginLimiter, async (req, res) => {
   const plainPassword = process.env.ADMIN_PASSWORD;
 
   if (!expectedUser || !plainPassword) {
-    console.error('ADMIN_USERNAME / ADMIN_PASSWORD are not configured in .env');
+    console.error('[admin] credentials missing in env');
     return res.status(500).json({ error: 'Admin login is not configured yet.' });
   }
 
   if (typeof username !== 'string' || typeof password !== 'string') {
+    console.warn('[admin] login attempt with invalid payload');
     return res.status(400).json({ error: 'Username and password are required.' });
   }
 
@@ -31,16 +32,19 @@ router.post('/login', loginLimiter, async (req, res) => {
   const passwordOk = typeof plainPassword === 'string' && plainPassword.length > 0 && password === plainPassword;
 
   if (!usernameOk || !passwordOk) {
+    console.warn('[admin] login failed');
     return res.status(401).json({ error: 'Incorrect username or password.' });
   }
 
   const token = signAdminToken(username);
   res.cookie(COOKIE_NAME, token, cookieOptions());
+  console.log('[admin] login success');
   return res.json({ ok: true });
 });
 
 router.post('/logout', (req, res) => {
   res.clearCookie(COOKIE_NAME, { ...cookieOptions(), maxAge: 0 });
+  console.log('[admin] logout');
   return res.json({ ok: true });
 });
 
@@ -62,6 +66,7 @@ router.get('/registrations', requireAdmin, async (req, res) => {
     );
   }
 
+  console.log('[admin] registrations fetched', { count: rows.length });
   return res.json({ ok: true, total: rows.length, registrations: rows });
 });
 

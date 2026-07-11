@@ -30,16 +30,19 @@ router.post('/register', registerLimiter, async (req, res) => {
   // auto-fill every field will trip it. Respond as if it worked so the
   // bot doesn't learn anything, but skip the write.
   if (typeof body.company_website === 'string' && body.company_website.trim() !== '') {
+    console.warn('[register] honeypot trigger');
     return res.status(201).json({ ok: true, refCode: makeRefCode() });
   }
 
   const { valid, errors, data } = validateRegistration(body);
   if (!valid) {
+    console.warn('[register] validation failed');
     return res.status(400).json({ error: 'Please check the highlighted fields.', fields: errors });
   }
 
   const existing = await statements.findByEmail.get(data.email);
   if (existing) {
+    console.warn('[register] duplicate email');
     return res.status(409).json({
       error: 'That email is already registered for Game 11 Festival.',
       fields: { email: 'Already registered.' },
@@ -59,6 +62,7 @@ router.post('/register', registerLimiter, async (req, res) => {
         ip_address: req.ip,
       });
       inserted = true;
+      console.log('[register] registration created');
     } catch (err) {
       const msg = String(err.message || '');
 
@@ -76,13 +80,13 @@ router.post('/register', registerLimiter, async (req, res) => {
         });
       }
 
-      console.error('Registration insert failed:', err);
+      console.error('[register] insert failed');
       return res.status(500).json({ error: 'Something went wrong. Try again.' });
     }
   }
 
   if (!inserted) {
-    console.error('Could not generate a unique reference code after several attempts.');
+    console.error('[register] could not generate unique ref code');
     return res.status(500).json({ error: 'Something went wrong. Try again.' });
   }
 

@@ -111,6 +111,28 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  const startedAt = Date.now();
+  res.on('finish', () => {
+    const isApiRequest = req.path.startsWith('/api') || req.path === '/health' || req.path === '/healthz';
+    if (!isApiRequest) return;
+
+    const statusCode = res.statusCode;
+    const durationMs = Date.now() - startedAt;
+    const level = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
+    const message = `[request] ${req.method} ${req.path} -> ${statusCode} (${durationMs}ms)`;
+
+    if (level === 'error') {
+      console.error(message);
+    } else if (level === 'warn') {
+      console.warn(message);
+    } else {
+      console.log(message);
+    }
+  });
+  next();
+});
+
 // Clean URLs: Redirect .html requests to extensionless equivalents
 app.use((req, res, next) => {
   if (req.path.endsWith('.html')) {

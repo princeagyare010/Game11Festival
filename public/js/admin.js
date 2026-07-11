@@ -157,23 +157,29 @@
 
     var refTd = document.createElement('td');
     refTd.className = 'cell-ref';
+    refTd.dataset.label = 'Reference';
     refTd.textContent = r.ref_code;
 
     var nameTd = document.createElement('td');
     nameTd.className = 'cell-name';
+    nameTd.dataset.label = 'Name';
     nameTd.textContent = r.name;
 
     var emailTd = document.createElement('td');
+    emailTd.dataset.label = 'Email';
     emailTd.textContent = r.email;
 
     var phoneTd = document.createElement('td');
+    phoneTd.dataset.label = 'Phone';
     phoneTd.textContent = r.phone;
 
     var dateTd = document.createElement('td');
+    dateTd.dataset.label = 'Registered';
     var parsed = new Date(r.created_at);
     dateTd.textContent = isNaN(parsed.getTime()) ? r.created_at : dateFormatter.format(parsed);
 
     var actionTd = document.createElement('td');
+    actionTd.dataset.label = 'Actions';
     var delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'row-delete';
