@@ -1,0 +1,9 @@
+# nixpacks.toml
+# Pin Node.js to v20 LTS (prebuilt binaries exist for better-sqlite3)
+# and add python3 + build tools as fallback for any native addon compilation.
+
+[phases.setup]
+nixPkgs = ["...", "python311", "gcc", "gnumake"]
+
+[phases.install]
+cmds = ["npm ci"]
