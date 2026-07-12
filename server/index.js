@@ -26,6 +26,7 @@ const { statements, ensurePostgresInitialized } = require('./db');
 const { getSafeRequestTarget } = require('./utils/logging');
 
 const app = express();
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
@@ -108,6 +109,7 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-Robots-Tag', isAdminOrApi ? 'noindex, nofollow' : 'index, follow');
   return next();
 });
